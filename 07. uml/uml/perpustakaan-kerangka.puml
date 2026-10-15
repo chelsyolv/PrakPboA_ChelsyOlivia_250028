@@ -1,0 +1,112 @@
+@startuml perpustakaan-class
+title Sistem Perpustakaan — Class Diagram (Sesi 7)
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+' ─────────────────────────────────────────────────────────────
+' KERANGKA. Lengkapi setiap bagian bertanda TODO.
+' Setiap kelas di sini harus ada di kode Anda, dan sebaliknya.
+' ─────────────────────────────────────────────────────────────
+
+package model {
+
+  abstract class Koleksi {
+    - nomorInduk : String
+    - judul : String
+    - penulis : String
+    - tahun : int
+    - jumlahEksemplar : int
+    + {abstract} masaPinjamHari() : int
+    + {abstract} bolehDipinjam() : boolean
+    + tersedia() : boolean
+  }
+
+  ' TODO 1: tambahkan tiga turunan Koleksi — Buku, Majalah, Skripsi.
+  class Buku {
+    - penerbit : String
+    + masaPinjamHari() : int
+    + bolehDipinjam() : boolean
+  }
+
+  class Majalah {
+    - edisi : String
+    + masaPinjamHari() : int
+    + bolehDipinjam() : boolean
+  }
+
+  class Skripsi {
+    - nimMahasiswa : String
+    + masaPinjamHari() : int
+    + bolehDipinjam() : boolean
+  }
+
+  Koleksi <|-- Buku
+  Koleksi <|-- Majalah
+  Koleksi <|-- Skripsi
+
+  class Bab {
+    - nomor : int
+    - judul : String
+  }
+
+  ' TODO 2: tambahkan kelas Anggota dan Peminjaman beserta atributnya.
+  class Anggota {
+    - nomorAnggota : String
+    - nama : String
+    - alamat : String
+    + getNomorAnggota() : String
+  }
+
+  class Peminjaman {
+    - tanggalPinjam : String
+    - tanggalHarusKembali : String
+    - status : StatusPeminjaman
+  }
+
+  ' TODO 3: tambahkan enum StatusKoleksi dan enum/kelas JenisKeanggotaan.
+  enum StatusKoleksi {
+    TERSEDIA
+    DIPINJAM
+    RUSAK
+    HILANG
+  }
+
+  class JenisKeanggotaan {
+    - namaJenis : String
+    - batasMaksimalPinjam : int
+  }
+
+  ' ── RELASI ───────────────────────────────────────────────
+  ' TODO 4: lengkapi relasi berikut.
+  ' Buku ? Bab -> Komposisi (Buku memiliki Bab)
+  Buku *-- "1..*" Bab : berisis >
+
+  ' Anggota ? Peminjaman -> Komposisi/Asosiasi kuat
+  Anggota *-- "*" Peminjaman : melakukan >
+
+  ' Peminjaman ? Koleksi -> Asosiasi
+  Peminjaman --> "1" Koleksi : memuat >
+
+  ' Hubungan Anggota dengan JenisKeanggotaan
+  Anggota --> "1" JenisKeanggotaan : memiliki >
+
+  ' TODO 5: relasi ini SALAH (sebelumnya Koleksi <|-- Bab). 
+  ' Diperbaiki di atas dengan relasi pewarisan yang benar (Koleksi <|-- Buku, dsb.)
+}
+
+package service {
+  class PerpustakaanService {
+    + tambahKoleksi(k : Koleksi) : void
+    + daftarkanAnggota(a : Anggota) : void
+    + pinjam(nomorAnggota : String, nomorInduk : String) : Peminjaman
+    + kembalikan(nomorAnggota : String, nomorInduk : String) : void
+    + cariKoleksi(nomorInduk : String) : Koleksi
+  }
+
+  ' TODO 6: tambahkan relasi antara PerpustakaanService dengan Koleksi dan Anggota (Agregasi).
+  PerpustakaanService o-- "*" Koleksi : mengelola koleksi >
+  PerpustakaanService o-- "*" Anggota : mengelola anggota >
+}
+
+@enduml

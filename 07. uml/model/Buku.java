@@ -15,10 +15,29 @@ import java.util.List;
  */
 public class Buku {
 
+    /**
+     * Bab adalah BAGIAN dari Buku — kelasnya bersarang untuk menegaskan itu,
+     * dan constructor-nya privat agar hanya Buku yang boleh membuatnya.
+     */
+    public static final class Bab {
+        private final int nomor;
+        private final String judul;
+
+        private Bab(int nomor, String judul) {
+            this.nomor = nomor;
+            this.judul = judul;
+        }
+
+        public String getJudul() { return judul; }
+        public int getNomor()    { return nomor; }
+
+        @Override public String toString() { return "Bab " + nomor + ": " + judul; }
+    }
     private final String nomorInduk;
     private final String judul;
     private final String penulis;
     private int jumlahEksemplar;
+
     private final List<Bab> bab = new ArrayList<>();
 
     public Buku(String nomorInduk, String judul, String penulis, int jumlahEksemplar) {
@@ -33,6 +52,29 @@ public class Buku {
     }
 
     /**
+     * TODO 3: kembalikan salinan yang tidak bisa diubah.
+     *         Petunjuk: List.copyOf(...)
+     *         Coba dulu mengembalikan `bab` apa adanya, jalankan bukti-relasi.md
+     *         percobaan 1, lalu perbaiki. Rasakan bedanya.
+     */
+    public List<Bab> getBab() {
+        return List.copyOf(bab);
+    }
+
+    public String getJudul()        { return judul; }
+
+    public int getJumlahEksemplar() { return jumlahEksemplar; }
+
+    public String getNomorInduk()   { return nomorInduk; }
+
+    /** TODO 4: kurangi stok; tolak bila sudah nol. */
+    public void kurangiStok() {
+        if (jumlahEksemplar <= 0) {
+            throw new IllegalStateException("Stok buku sudah nol, tidak bisa dikurangi.");
+        }
+        jumlahEksemplar--;
+    }
+    /**
      * TODO 2: satu-satunya cara Bab lahir.
      *         Perhatikan: parameternya nomor dan judul, BUKAN objek Bab.
      *         Kalau Anda menerima objek Bab dari luar, ini menjadi agregasi.
@@ -40,54 +82,13 @@ public class Buku {
     public void tambahBab(int nomor, String judulBab) {
         this.bab.add(new Bab(nomor, judulBab));
     }
-
-    /**
-     * TODO 3: kembalikan salinan yang tidak bisa diubah.
-     *         Petunjuk: List.copyOf(...)
-     *         Coba dulu mengembalikan `bab` apa adanya, jalankan bukti-relasi.md
-     *         percobaan 1, lalu perbaiki. Rasakan bedanya.
-     */
-    public List<Bab> getBab() {
-        return List.copyOf(bab);   // ganti
-    }
-
-    public boolean tersedia() { return jumlahEksemplar > 0; }
-
-    /** TODO 4: kurangi stok; tolak bila sudah nol. */
-    public void kurangiStok() {
-        if (jumlahEksemplar > 0) {
-            jumlahEksemplar--;
-        }
-    }
-
     public void tambahStok() { jumlahEksemplar++; }
 
-    public String getNomorInduk()  { return nomorInduk; }
-    public String getJudul()       { return judul; }
-    public int getJumlahEksemplar() { return jumlahEksemplar; }
+    public boolean tersedia() { return jumlahEksemplar > 0; }
 
     @Override
     public String toString() {
         return String.format("%-32s %-16s [%d eks, %d bab]",
                 judul, penulis, jumlahEksemplar, bab.size());
-    }
-
-    /**
-     * Bab adalah BAGIAN dari Buku — kelasnya bersarang untuk menegaskan itu,
-     * dan constructor-nya privat agar hanya Buku yang boleh membuatnya.
-     */
-    public static final class Bab {
-        private final int nomor;
-        private final String judul;
-
-        private Bab(int nomor, String judul) {
-            this.nomor = nomor;
-            this.judul = judul;
-        }
-
-        public int getNomor()    { return nomor; }
-        public String getJudul() { return judul; }
-
-        @Override public String toString() { return "Bab " + nomor + ": " + judul; }
     }
 }
